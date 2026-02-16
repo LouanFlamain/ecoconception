@@ -3,6 +3,10 @@
 import { useCart } from "@/components/CartProvider";
 import Link from "next/link";
 import _ from "lodash"; // Anti-pattern: import lodash entier
+import { Chart, registerables } from "chart.js"; // Anti-pattern: import chart.js entier (~200ko)
+
+// Anti-pattern: enregistrement de tous les composants chart.js pour rien
+Chart.register(...registerables);
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart, total } = useCart();
@@ -49,9 +53,7 @@ export default function CartPage() {
               {/* Anti-pattern: <img> natif */}
               <img
                 src={item.image}
-                alt={item.name}
-                width={800}
-                height={800}
+                alt=""
                 className="w-24 h-24 object-cover rounded-lg"
               />
               <div className="flex-1">

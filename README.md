@@ -53,15 +53,17 @@ npx prisma db seed   # seed la DB de prod (optionnel)
 
 Ce projet contient des problemes de performance intentionnels pour servir de support pedagogique :
 
-| # | Probleme | Fichier(s) |
-|---|----------|-----------|
-| 1 | Images non optimisees (`<img>` au lieu de `next/image`) | `ProductCard.tsx`, pages |
-| 2 | Pas de pagination (200 produits charges d'un coup) | `products/page.tsx` |
-| 3 | Requetes N+1 (categorie chargee separement par produit) | `app/page.tsx` |
-| 4 | Pas de cache (`revalidate = 0`, `no-store`) | Pages, API routes |
-| 5 | Import lodash entier pour un seul usage | `Header.tsx`, `cart/page.tsx` |
-| 6 | Pas de lazy loading des composants | Toutes les pages |
-| 7 | Google Fonts via `<link>` au lieu de `next/font` | `layout.tsx` |
-| 8 | CSS inutilise (animations, classes) | `globals.css` |
-| 9 | `console.log` en production | Partout |
-| 10 | Re-renders inutiles (CartProvider sans memoisation) | `CartProvider.tsx` |
+| #   | Probleme                                                | Fichier(s)                    |
+| --- | ------------------------------------------------------- | ----------------------------- |
+| 1   | Images non optimisees (`<img>` au lieu de `next/image`) | `ProductCard.tsx`, pages      |
+| 2   | Pas de pagination (200 produits charges d'un coup)      | `products/page.tsx`           |
+| 3   | Requetes N+1 (categorie chargee separement par produit) | `app/page.tsx`                |
+| 4   | Pas de cache (`revalidate = 0`, `no-store`)             | Pages, API routes             |
+| 5   | Import lodash entier pour un seul usage                 | `Header.tsx`, `cart/page.tsx` |
+| 6   | Pas de lazy loading des composants                      | Toutes les pages              |
+| 7   | Google Fonts via `<link>` au lieu de `next/font`        | `layout.tsx`                  |
+| 8   | CSS inutilise (animations, classes)                     | `globals.css`                 |
+| 9   | `console.log` en production                             | Partout                       |
+| 10  | Re-renders inutiles (CartProvider sans memoisation)     | `CartProvider.tsx`            |
+
+v1 save
