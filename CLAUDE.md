@@ -29,6 +29,7 @@ src/
     cart/page.tsx         # panier (state client)
     api/products/route.ts # GET tous les produits
     api/orders/route.ts   # GET/POST commandes
+    api/seed/route.ts     # POST seed DB (protege par SEED_SECRET)
     layout.tsx            # layout global (fonts via <link>)
     globals.css           # CSS global avec styles inutilises
   components/
@@ -38,6 +39,7 @@ src/
     ProductCard.tsx
   lib/
     prisma.ts             # instance PrismaClient avec adapter-pg
+    seed.ts               # logique de seed partagee (CLI + API)
   generated/prisma/       # client Prisma genere (ne pas modifier)
 prisma/
   schema.prisma           # 5 modeles: Category, Product, User, Order, OrderItem
@@ -53,7 +55,15 @@ prisma/
 
 ## Variables d'environnement
 - `DATABASE_URL` - connection string PostgreSQL (voir `.env`)
+- `SEED_SECRET` - secret pour proteger la route `POST /api/seed`
 - Local : `postgresql://ecoshop:ecoshop_password@localhost:3456/ecoshop?schema=public`
+
+## Seed en production (Vercel)
+Apres deploiement, remplir la DB via :
+```bash
+curl -X POST https://ton-site.vercel.app/api/seed -H "Authorization: Bearer <SEED_SECRET>"
+```
+Configurer `SEED_SECRET` dans les env vars Vercel.
 
 ## Anti-patterns volontaires (ne pas corriger sauf si demande)
 1. `<img>` au lieu de `next/image` (images 800x800 non optimisees)
