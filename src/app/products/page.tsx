@@ -1,27 +1,75 @@
-import prisma from "@/lib/prisma";
+"use client";
+
+// Anti-pattern: page convertie en CSR - toutes les données chargées côté client
+import { Suspense, useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
+import { useSearchParams } from "next/navigation";
 
-// Anti-pattern: pas de cache
-export const revalidate = 0;
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  category: { name: string };
+  categoryId: number;
+}
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string }>;
-}) {
-  const params = await searchParams;
-  const categoryId = params.category ? parseInt(params.category) : undefined;
+interface Category {
+  id: number;
+  name: string;
+}
 
-  // Anti-pattern: charge TOUS les produits sans pagination
-  const products = await prisma.product.findMany({
-    where: categoryId ? { categoryId } : undefined,
-    include: { category: true },
-    orderBy: { createdAt: "desc" },
-  });
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center">Chargement...</div>}>
+      <ProductsContent />
+    </Suspense>
+  );
+}
 
-  const categories = await prisma.category.findMany();
+function ProductsContent() {
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get("category") ? parseInt(searchParams.get("category")!) : undefined;
 
-  console.log("ProductsPage: loaded", products.length, "products"); // Anti-pattern: console.log
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Anti-pattern: fetch côté client, pas de cache, re-fetch à chaque navigation
+  useEffect(() => {
+    console.log("ProductsPage: fetching all products client-side..."); // Anti-pattern: console.log
+    setLoading(true);
+
+    Promise.all([
+      fetch("/api/products").then((res) => res.json()),
+      fetch("/api/categories").then((res) => res.json()),
+    ]).then(([productsData, categoriesData]) => {
+      setProducts(productsData);
+      setCategories(categoriesData);
+      console.log("ProductsPage: loaded", productsData.length, "products");
+      // Anti-pattern: délai artificiel
+      setTimeout(() => setLoading(false), 200);
+    });
+  }, []);
+
+  // Anti-pattern: filtrage côté client au lieu de côté serveur
+  const filteredProducts = categoryId
+    ? products.filter((p) => p.categoryId === categoryId)
+    : products;
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" style={{ animation: "spin 1s linear infinite" }}></div>
+            <p className="text-gray-500">Chargement des produits...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -58,11 +106,11 @@ export default async function ProductsPage({
         ))}
       </div>
 
-      <p className="text-gray-500 mb-6">{products.length} produits trouvés</p>
+      <p className="text-gray-500 mb-6">{filteredProducts.length} produits trouvés</p>
 
       {/* Anti-pattern: pas de pagination, tous les 200 produits chargés d'un coup */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard
             key={product.id}
             id={product.id}
@@ -70,7 +118,7 @@ export default async function ProductsPage({
             price={product.price}
             image={product.image}
             description={product.description}
-            categoryName={product.category.name}
+            categoryName={product.category?.name}
           />
         ))}
       </div>

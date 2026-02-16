@@ -52,13 +52,11 @@ export default async function ProductPage({
       </a>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-4">
-        {/* Anti-pattern: <img> natif, image 800x800 non optimisée */}
+        {/* Anti-pattern: <img> natif, image 2000x2000, alt vide, pas de dimensions (CLS), cache-busting */}
         <div>
           <img
-            src={product.image}
-            alt={product.name}
-            width={800}
-            height={800}
+            src={product.image.replace(/\/800\/800/, "/2000/2000") + `?nocache=${product.id}-${Date.now()}`}
+            alt=""
             className="w-full rounded-xl shadow-lg"
           />
         </div>

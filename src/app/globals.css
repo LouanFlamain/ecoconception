@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Anti-pattern: import d'une lib CSS entière pour quelques animations */
+@import "animate.css";
+
 /* Anti-pattern: CSS global chargé partout, y compris des styles inutilisés */
 
 :root {
@@ -52,6 +55,33 @@ body {
   100% { background-position: 200% 0; }
 }
 
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(79, 70, 229, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.6); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out;
 }
@@ -66,6 +96,24 @@ body {
 
 .animate-bounce-custom {
   animation: bounce 1s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-rainbow {
+  background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+  background-size: 1800% 1800%;
+  animation: rainbow 18s ease infinite;
 }
 
 /* Anti-pattern: styles de composants qui ne sont pas utilisés */
@@ -88,6 +136,101 @@ body {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Anti-pattern: styles de page admin qui n'existe pas */
+.admin-sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #1e1b4b, #312e81);
+  color: white;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background: #f3f4f6;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.admin-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Anti-pattern: styles de dashboard qui n'existe pas */
+.dashboard-widget {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-chart {
+  height: 300px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: white;
+  border-left: 4px solid var(--primary);
+}
+
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.stat-card .stat-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Anti-pattern: styles de formulaire surchargés et inutilisés */
+.form-input-fancy {
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-input-fancy:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  outline: none;
+}
+
+.form-input-fancy:hover {
+  border-color: #a5b4fc;
+}
+
+.form-label-fancy {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 /* Anti-pattern: media queries dupliquées et inutilisées */
@@ -115,5 +258,25 @@ body {
 @media (max-width: 1024px) {
   .desktop-hidden {
     display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl-container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-full {
+    width: 100% !important;
+  }
+  body {
+    background: white;
+    color: black;
   }
 }
