@@ -20,7 +20,10 @@ export default async function HomePage() {
       {/* Hero section */}
       <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1
+            className="text-5xl font-bold mb-6"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
             Bienvenue sur EcoShop
           </h1>
           <p className="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
@@ -31,14 +34,17 @@ export default async function HomePage() {
             href="/products"
             className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 inline-block"
           >
-            Voir tous les produits
+            <button>Voir tous les produits</button>
           </Link>
         </div>
       </section>
 
       {/* Categories */}
       <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h2
+          className="text-3xl font-bold text-gray-900 mb-8 text-center"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
           Nos Catégories
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -65,7 +71,10 @@ export default async function HomePage() {
 
       {/* Featured Products */}
       <section className="max-w-7xl mx-auto px-4 py-16 bg-white">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h2
+          className="text-3xl font-bold text-gray-900 mb-8 text-center"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
           Nouveautés
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

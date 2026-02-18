@@ -39,7 +39,10 @@ export default async function ProductsPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <h1
+        className="text-4xl font-bold text-gray-900 mb-8"
+        style={{ fontFamily: "'Playfair Display', serif" }}
+      >
         {categoryId
           ? `${categories.find((c) => c.id === categoryId)?.name || "Catégorie"}`
           : "Tous nos produits"}
@@ -67,7 +70,7 @@ export default async function ProductsPage({
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
-            {cat.name}
+            <button>{cat.name}</button>
           </Link>
         ))}
       </div>
@@ -90,9 +93,14 @@ export default async function ProductsPage({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-12">
+        <nav
+          aria-label="Pagination des produits"
+          className="flex items-center justify-center gap-2 mt-12"
+        >
           <Link
             href={currentPage > 1 ? buildUrl(currentPage - 1) : "#"}
+            aria-label="Page précédente"
+            aria-disabled={currentPage <= 1}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               currentPage > 1
                 ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -106,6 +114,8 @@ export default async function ProductsPage({
             <Link
               key={page}
               href={buildUrl(page)}
+              aria-label={`Page ${page}`}
+              aria-current={page === currentPage ? "page" : undefined}
               className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
                 page === currentPage
                   ? "bg-indigo-600 text-white"
@@ -118,6 +128,8 @@ export default async function ProductsPage({
 
           <Link
             href={currentPage < totalPages ? buildUrl(currentPage + 1) : "#"}
+            aria-label="Page suivante"
+            aria-disabled={currentPage >= totalPages}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               currentPage < totalPages
                 ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -126,7 +138,7 @@ export default async function ProductsPage({
           >
             Suivant →
           </Link>
-        </div>
+        </nav>
       )}
     </div>
   );

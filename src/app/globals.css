@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@layer base {
+  a {
+    text-decoration-line: none;
+  }
+}
+
 /* Anti-pattern: CSS global chargé partout, y compris des styles inutilisés */
 
 :root {
