@@ -1,8 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
-import moment from "moment"; // Anti-pattern: import de moment.js (300ko+) pour un usage trivial
-import "moment/locale/fr"; // Anti-pattern: import d'une locale complète
+import { format, formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 // Anti-pattern: pas de mémoisation, le context re-render tous les consumers à chaque changement
 export interface CartItem {
@@ -11,7 +11,7 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  addedAt?: string; // Anti-pattern: champ inutile ajouté pour justifier moment
+  addedAt?: string;
 }
 
 interface CartContextType {
@@ -33,13 +33,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Anti-pattern: utilisation de moment pour un log inutile
-  console.log("CartProvider render -", moment().locale("fr").format("dddd DD MMMM YYYY HH:mm:ss"), "- items:", items.length, "total:", total);
+  console.log("CartProvider render -", format(new Date(), "EEEE dd MMMM yyyy HH:mm:ss", { locale: fr }), "- items:", items.length, "total:", total);
 
   const addToCart = (product: { id: number; name: string; price: number; image: string }) => {
-    // Anti-pattern: moment utilisé pour stocker un timestamp déjà disponible via Date
-    const addedAt = moment().toISOString();
-    console.log("Adding to cart:", product.name, "at", moment(addedAt).fromNow());
+    const addedAt = new Date().toISOString();
+    console.log("Adding to cart:", product.name, "at", formatDistanceToNow(new Date(addedAt), { locale: fr, addSuffix: true }));
     setItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
@@ -52,7 +50,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (id: number) => {
-    console.log("Removing from cart:", id, "at", moment().format("HH:mm:ss")); // Anti-pattern: console.log + moment
+    console.log("Removing from cart:", id, "at", format(new Date(), "HH:mm:ss"));
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 

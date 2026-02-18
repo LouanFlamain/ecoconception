@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* Anti-pattern: import d'une lib CSS entière pour quelques animations */
-@import "animate.css";
-
 /* Anti-pattern: CSS global chargé partout, y compris des styles inutilisés */
 
 :root {

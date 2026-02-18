@@ -4,8 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartProvider";
 
-// Anti-pattern: import de polyfills inutiles qui alourdissent le bundle
-import "core-js";
 
 export const metadata: Metadata = {
   title: "EcoShop - Votre boutique en ligne",
