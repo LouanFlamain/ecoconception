@@ -3,21 +3,15 @@
 import { useCart } from "@/components/CartProvider";
 import Link from "next/link";
 import Image from "next/image";
-import _ from "lodash"; // Anti-pattern: import lodash entier
-import { Chart, registerables } from "chart.js"; // Anti-pattern: import chart.js entier (~200ko)
-
-// Anti-pattern: enregistrement de tous les composants chart.js pour rien
-Chart.register(...registerables);
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart, total } = useCart();
 
   console.log("CartPage render - items:", items.length); // Anti-pattern: console.log
 
-  // Anti-pattern: utilisation de lodash pour des opérations triviales
-  const formattedTotal = _.round(total, 2).toFixed(2);
-  const isEmpty = _.isEmpty(items);
-  const sortedItems = _.sortBy(items, ["name"]);
+  const formattedTotal = Math.round(total * 100 / 100).toFixed(2);
+  const isEmpty = items.length === 0;
+  const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
 
   if (isEmpty) {
     return (

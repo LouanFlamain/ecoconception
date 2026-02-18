@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { useCart } from "./CartProvider";
-import _ from "lodash"; // Anti-pattern: import de tout lodash pour un seul usage
 
 export default function Header() {
   const { itemCount, total } = useCart();
 
-  // Anti-pattern: utilisation de lodash juste pour formater un prix
-  const formattedTotal = _.round(total, 2).toFixed(2);
+  const formattedTotal = Math.round(total * 100 / 100).toFixed(2);
 
   console.log("Header render", { itemCount, formattedTotal }); // Anti-pattern: console.log
 
