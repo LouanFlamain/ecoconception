@@ -1,81 +1,21 @@
-"use client";
-
-// Anti-pattern: page convertie en CSR - les données sont chargées côté client au lieu du serveur
-import { useState, useEffect } from "react";
+import prisma from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-  category?: { name: string };
-  categoryName?: string;
-}
+export const revalidate = 3600;
 
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
-
-export default function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Anti-pattern: fetch côté client au lieu de SSR, provoque un flash de contenu vide (CLS)
-  useEffect(() => {
-    console.log("HomePage: fetching data client-side..."); // Anti-pattern: console.log
-
-    // Anti-pattern: pas de gestion d'erreur, pas de cache
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.slice(0, 12));
-        console.log("HomePage: loaded", data.length, "products");
-      });
-
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data) => {
-        setCategories(data);
-      })
-      .finally(() => {
-        // Anti-pattern: délai artificiel pour aggraver le CLS
-        setTimeout(() => setLoading(false), 300);
-      });
-  }, []);
-
-  // Anti-pattern: bannière promo qui apparaît après un délai, provoquant du layout shift
-  const [showPromo, setShowPromo] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => setShowPromo(true), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" style={{ animation: "spin 1s linear infinite" }}></div>
-          <p className="text-gray-500 text-lg">Chargement des produits...</p>
-        </div>
-      </div>
-    );
-  }
+export default async function HomePage() {
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({
+      take: 12,
+      include: { category: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.category.findMany(),
+  ]);
 
   return (
     <div>
-      {/* Anti-pattern: bannière qui apparaît en retard et pousse le contenu (CLS) */}
-      {showPromo && (
-        <div className="bg-yellow-400 text-black py-3 text-center font-bold text-lg">
-          PROMO FLASH : -20% sur tout le site avec le code ECOSHOP20 !
-        </div>
-      )}
-
       {/* Hero section */}
       <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -107,7 +47,6 @@ export default function HomePage() {
               href={`/products?category=${cat.id}`}
               className="relative rounded-xl overflow-hidden group h-48"
             >
-              {/* Anti-pattern: <img> natif, pas de lazy loading, alt vide */}
               <img
                 src={cat.image}
                 alt=""
@@ -135,7 +74,7 @@ export default function HomePage() {
               price={product.price}
               image={product.image}
               description={product.description}
-              categoryName={product.category?.name || product.categoryName}
+              categoryName={product.category?.name}
             />
           ))}
         </div>

@@ -1,10 +1,17 @@
 import prisma from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 
-// Anti-pattern: pas de cache
-export const revalidate = 0;
+export const revalidate = 3600;
 
-// Anti-pattern: pas de generateStaticParams pour pré-rendre les pages populaires
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({
+    select: { id: true },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+
+  return products.map((p) => ({ id: p.id.toString() }));
+}
 
 export default async function ProductPage({
   params,
@@ -14,9 +21,9 @@ export default async function ProductPage({
   const { id } = await params;
   const productId = parseInt(id);
 
-  // Anti-pattern: 2 requêtes séparées au lieu d'un include
   const product = await prisma.product.findUnique({
     where: { id: productId },
+    include: { category: true },
   });
 
   if (!product) {
@@ -30,17 +37,13 @@ export default async function ProductPage({
     );
   }
 
-  const category = await prisma.category.findUnique({
-    where: { id: product.categoryId },
-  });
-
-  // Anti-pattern: charge TOUS les produits de la même catégorie pour les "similaires"
   const relatedProducts = await prisma.product.findMany({
     where: {
       categoryId: product.categoryId,
       id: { not: product.id },
     },
     include: { category: true },
+    take: 4,
   });
 
   console.log("ProductPage:", product.name, "- related:", relatedProducts.length); // Anti-pattern: console.log
@@ -63,7 +66,7 @@ export default async function ProductPage({
 
         <div>
           <span className="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
-            {category?.name}
+            {product.category?.name}
           </span>
           <h1 className="text-3xl font-bold text-gray-900 mt-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             {product.name}
@@ -84,7 +87,7 @@ export default async function ProductPage({
         </div>
       </div>
 
-      {/* Related products - Anti-pattern: charge tous les produits de la catégorie */}
+      {/* Related products */}
       {relatedProducts.length > 0 && (
         <section className="mt-16">
           <h2 className="text-2xl font-bold text-gray-900 mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>

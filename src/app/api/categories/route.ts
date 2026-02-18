@@ -9,7 +9,7 @@ export async function GET() {
 
   return NextResponse.json(categories, {
     headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate", // Anti-pattern: pas de cache
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=60",
     },
   });
 }
