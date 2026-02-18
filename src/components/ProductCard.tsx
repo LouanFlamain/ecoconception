@@ -36,18 +36,16 @@ export default function ProductCard({ id, name, price, image, description, categ
           </span>
         )}
         <Link href={`/products/${id}`}>
-          {/* Anti-pattern: contraste insuffisant - gris clair sur blanc */}
-          <h3 className="text-lg font-semibold mt-2 text-gray-400 hover:text-indigo-300 transition-colors duration-300 line-clamp-1">
+          <h3 className="text-lg font-semibold mt-2 text-gray-900 hover:text-indigo-600 transition-colors duration-300 line-clamp-1">
             {name}
           </h3>
         </Link>
-        {/* Anti-pattern: contraste très faible */}
-        <p className="text-gray-300 text-sm mt-1 line-clamp-2">{description}</p>
+        <p className="text-gray-600 text-sm mt-1 line-clamp-2">{description}</p>
         <div className="flex items-center justify-between mt-4">
           <span className="text-xl font-bold text-gray-900">{price.toFixed(2)}€</span>
-          {/* Anti-pattern: bouton sans label accessible */}
           <button
             onClick={() => addToCart({ id, name, price, image })}
+            aria-label={`Ajouter ${name} au panier`}
             className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor">

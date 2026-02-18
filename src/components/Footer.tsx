@@ -28,9 +28,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Suivez-nous</h4>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">Facebook</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">Twitter</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">Instagram</a>
+              <a href="#" aria-label="Facebook (lien externe)" className="text-gray-400 hover:text-white transition-colors duration-300">Facebook</a>
+              <a href="#" aria-label="Twitter (lien externe)" className="text-gray-400 hover:text-white transition-colors duration-300">Twitter</a>
+              <a href="#" aria-label="Instagram (lien externe)" className="text-gray-400 hover:text-white transition-colors duration-300">Instagram</a>
             </div>
           </div>
         </div>

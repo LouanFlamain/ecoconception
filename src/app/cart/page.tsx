@@ -61,6 +61,7 @@ export default function CartPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  aria-label={`Réduire la quantité de ${item.name}`}
                   className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                 >
                   -
@@ -68,6 +69,7 @@ export default function CartPage() {
                 <span className="font-medium w-8 text-center">{item.quantity}</span>
                 <button
                   onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  aria-label={`Augmenter la quantité de ${item.name}`}
                   className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                 >
                   +
@@ -78,6 +80,7 @@ export default function CartPage() {
               </p>
               <button
                 onClick={() => removeFromCart(item.id)}
+                aria-label={`Supprimer ${item.name} du panier`}
                 className="text-red-500 hover:text-red-700 transition-colors ml-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

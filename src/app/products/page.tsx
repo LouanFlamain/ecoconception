@@ -90,9 +90,11 @@ export default async function ProductsPage({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-12">
+        <nav aria-label="Pagination des produits" className="flex items-center justify-center gap-2 mt-12">
           <Link
             href={currentPage > 1 ? buildUrl(currentPage - 1) : "#"}
+            aria-label="Page précédente"
+            aria-disabled={currentPage <= 1}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               currentPage > 1
                 ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -106,6 +108,8 @@ export default async function ProductsPage({
             <Link
               key={page}
               href={buildUrl(page)}
+              aria-label={`Page ${page}`}
+              aria-current={page === currentPage ? "page" : undefined}
               className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
                 page === currentPage
                   ? "bg-indigo-600 text-white"
@@ -118,6 +122,8 @@ export default async function ProductsPage({
 
           <Link
             href={currentPage < totalPages ? buildUrl(currentPage + 1) : "#"}
+            aria-label="Page suivante"
+            aria-disabled={currentPage >= totalPages}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               currentPage < totalPages
                 ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -126,7 +132,7 @@ export default async function ProductsPage({
           >
             Suivant →
           </Link>
-        </div>
+        </nav>
       )}
     </div>
   );
