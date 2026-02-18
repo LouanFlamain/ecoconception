@@ -31,11 +31,11 @@ export default function HomePage() {
     console.log("HomePage: fetching data client-side..."); // Anti-pattern: console.log
 
     // Anti-pattern: pas de gestion d'erreur, pas de cache
-    fetch("/api/products")
+    fetch("/api/products?limit=12")
       .then((res) => res.json())
       .then((data) => {
-        setProducts(data.slice(0, 12));
-        console.log("HomePage: loaded", data.length, "products");
+        setProducts(data.products);
+        console.log("HomePage: loaded", data.products.length, "products");
       });
 
     fetch("/api/categories")

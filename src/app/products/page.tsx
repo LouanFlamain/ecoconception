@@ -1,6 +1,5 @@
 "use client";
 
-// Anti-pattern: page convertie en CSR - toutes les données chargées côté client
 import { Suspense, useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
 import { useSearchParams } from "next/navigation";
@@ -20,6 +19,13 @@ interface Category {
   name: string;
 }
 
+interface PaginatedResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 export default function ProductsPage() {
   return (
     <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center">Chargement...</div>}>
@@ -30,35 +36,32 @@ export default function ProductsPage() {
 
 function ProductsContent() {
   const searchParams = useSearchParams();
-  const categoryId = searchParams.get("category") ? parseInt(searchParams.get("category")!) : undefined;
+  const categoryId = searchParams.get("category") || undefined;
+  const currentPage = parseInt(searchParams.get("page") || "1");
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [data, setData] = useState<PaginatedResponse | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Anti-pattern: fetch côté client, pas de cache, re-fetch à chaque navigation
   useEffect(() => {
-    console.log("ProductsPage: fetching all products client-side..."); // Anti-pattern: console.log
     setLoading(true);
 
+    const params = new URLSearchParams();
+    params.set("page", currentPage.toString());
+    params.set("limit", "12");
+    if (categoryId) params.set("category", categoryId);
+
     Promise.all([
-      fetch("/api/products").then((res) => res.json()),
+      fetch(`/api/products?${params}`).then((res) => res.json()),
       fetch("/api/categories").then((res) => res.json()),
     ]).then(([productsData, categoriesData]) => {
-      setProducts(productsData);
+      setData(productsData);
       setCategories(categoriesData);
-      console.log("ProductsPage: loaded", productsData.length, "products");
-      // Anti-pattern: délai artificiel
-      setTimeout(() => setLoading(false), 200);
+      setLoading(false);
     });
-  }, []);
+  }, [currentPage, categoryId]);
 
-  // Anti-pattern: filtrage côté client au lieu de côté serveur
-  const filteredProducts = categoryId
-    ? products.filter((p) => p.categoryId === categoryId)
-    : products;
-
-  if (loading) {
+  if (loading || !data) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[40vh]">
@@ -71,11 +74,18 @@ function ProductsContent() {
     );
   }
 
+  const buildUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    if (categoryId) params.set("category", categoryId);
+    return `/products?${params}`;
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-gray-900 mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
         {categoryId
-          ? `${categories.find((c) => c.id === categoryId)?.name || "Catégorie"}`
+          ? `${categories.find((c) => c.id === parseInt(categoryId))?.name || "Catégorie"}`
           : "Tous nos produits"}
       </h1>
 
@@ -96,7 +106,7 @@ function ProductsContent() {
             key={cat.id}
             href={`/products?category=${cat.id}`}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              categoryId === cat.id
+              categoryId === cat.id.toString()
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
@@ -106,11 +116,10 @@ function ProductsContent() {
         ))}
       </div>
 
-      <p className="text-gray-500 mb-6">{filteredProducts.length} produits trouvés</p>
+      <p className="text-gray-500 mb-6">{data.total} produits trouvés</p>
 
-      {/* Anti-pattern: pas de pagination, tous les 200 produits chargés d'un coup */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
+        {data.products.map((product) => (
           <ProductCard
             key={product.id}
             id={product.id}
@@ -122,6 +131,47 @@ function ProductsContent() {
           />
         ))}
       </div>
+
+      {/* Pagination */}
+      {data.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-12">
+          <a
+            href={currentPage > 1 ? buildUrl(currentPage - 1) : undefined}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              currentPage > 1
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-100 text-gray-400 pointer-events-none"
+            }`}
+          >
+            ← Précédent
+          </a>
+
+          {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((page) => (
+            <a
+              key={page}
+              href={buildUrl(page)}
+              className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
+                page === currentPage
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {page}
+            </a>
+          ))}
+
+          <a
+            href={currentPage < data.totalPages ? buildUrl(currentPage + 1) : undefined}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              currentPage < data.totalPages
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-100 text-gray-400 pointer-events-none"
+            }`}
+          >
+            Suivant →
+          </a>
+        </div>
+      )}
     </div>
   );
 }
