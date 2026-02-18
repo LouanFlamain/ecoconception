@@ -39,7 +39,10 @@ export default async function ProductsPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <h1
+        className="text-4xl font-bold text-gray-900 mb-8"
+        style={{ fontFamily: "'Playfair Display', serif" }}
+      >
         {categoryId
           ? `${categories.find((c) => c.id === categoryId)?.name || "Catégorie"}`
           : "Tous nos produits"}
@@ -67,7 +70,7 @@ export default async function ProductsPage({
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
-            {cat.name}
+            <button>{cat.name}</button>
           </Link>
         ))}
       </div>
@@ -90,7 +93,10 @@ export default async function ProductsPage({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <nav aria-label="Pagination des produits" className="flex items-center justify-center gap-2 mt-12">
+        <nav
+          aria-label="Pagination des produits"
+          className="flex items-center justify-center gap-2 mt-12"
+        >
           <Link
             href={currentPage > 1 ? buildUrl(currentPage - 1) : "#"}
             aria-label="Page précédente"
