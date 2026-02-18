@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "./CartProvider";
 
 interface ProductCardProps {
@@ -17,16 +18,14 @@ export default function ProductCard({ id, name, price, image, description, categ
 
   console.log("ProductCard render:", name); // Anti-pattern: console.log pour chaque carte
 
-  // Anti-pattern: image 2000x2000 au lieu de la taille affichée, avec cache-busting
-  const oversizedImage = image.replace(/\/800\/800/, "/2000/2000") + `?nocache=${id}-${Date.now()}`;
-
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 border border-gray-100">
       <Link href={`/products/${id}`}>
-        {/* Anti-pattern: <img> natif, image 2000x2000, pas de dimensions (CLS), alt vide, pas de lazy loading, cache-busting */}
-        <img
-          src={oversizedImage}
-          alt=""
+        <Image
+          src={image}
+          alt={name}
+          width={400}
+          height={400}
           className="w-full h-64 object-cover"
         />
       </Link>

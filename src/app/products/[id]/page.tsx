@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 
 export const revalidate = 3600;
@@ -55,11 +56,12 @@ export default async function ProductPage({
       </a>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-4">
-        {/* Anti-pattern: <img> natif, image 2000x2000, alt vide, pas de dimensions (CLS), cache-busting */}
         <div>
-          <img
-            src={product.image.replace(/\/800\/800/, "/2000/2000") + `?nocache=${product.id}-${Date.now()}`}
-            alt=""
+          <Image
+            src={product.image}
+            alt={product.name}
+            width={800}
+            height={800}
             className="w-full rounded-xl shadow-lg"
           />
         </div>

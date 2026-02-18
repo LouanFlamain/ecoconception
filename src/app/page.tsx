@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 
@@ -47,10 +48,12 @@ export default async function HomePage() {
               href={`/products?category=${cat.id}`}
               className="relative rounded-xl overflow-hidden group h-48"
             >
-              <img
+              <Image
                 src={cat.image}
-                alt=""
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                alt={cat.name}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
                 <h3 className="text-white text-xl font-bold">{cat.name}</h3>

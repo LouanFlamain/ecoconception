@@ -2,6 +2,7 @@
 
 import { useCart } from "@/components/CartProvider";
 import Link from "next/link";
+import Image from "next/image";
 import _ from "lodash"; // Anti-pattern: import lodash entier
 import { Chart, registerables } from "chart.js"; // Anti-pattern: import chart.js entier (~200ko)
 
@@ -50,10 +51,11 @@ export default function CartPage() {
               key={item.id}
               className="bg-white rounded-xl shadow-md p-4 flex items-center gap-4"
             >
-              {/* Anti-pattern: <img> natif, alt vide */}
-              <img
+              <Image
                 src={item.image}
-                alt=""
+                alt={item.name}
+                width={96}
+                height={96}
                 className="w-24 h-24 object-cover rounded-lg"
               />
               <div className="flex-1">
