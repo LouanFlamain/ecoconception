@@ -20,13 +20,13 @@ export default function Header() {
         <nav className="flex items-center gap-8">
           <Link
             href="/"
-            className="text-gray-700 hover:text-gray-900 transition-all duration-300 font-medium"
+            className="underline text-gray-700 hover:text-gray-900 transition-all duration-300 font-medium"
           >
             Accueil
           </Link>
           <Link
             href="/products"
-            className="text-gray-700 hover:text-gray-900 transition-all duration-300 font-medium"
+            className="underline text-gray-700 hover:text-gray-900 transition-all duration-300 font-medium"
           >
             Produits
           </Link>

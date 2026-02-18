@@ -12,9 +12,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Navigation</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="/" className="hover:text-white transition-colors duration-300">Accueil</a></li>
-              <li><a href="/products" className="hover:text-white transition-colors duration-300">Produits</a></li>
-              <li><a href="/cart" className="hover:text-white transition-colors duration-300">Panier</a></li>
+              <li><a href="/" className="underline hover:text-white transition-colors duration-300">Accueil</a></li>
+              <li><a href="/products" className="underline hover:text-white transition-colors duration-300">Produits</a></li>
+              <li><a href="/cart" className="underline hover:text-white transition-colors duration-300">Panier</a></li>
             </ul>
           </div>
           <div>
@@ -28,9 +28,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Suivez-nous</h4>
             <div className="flex gap-4">
-              <a href="#" aria-label="Facebook (lien externe)" className="text-gray-400 hover:text-white transition-colors duration-300">Facebook</a>
-              <a href="#" aria-label="Twitter (lien externe)" className="text-gray-400 hover:text-white transition-colors duration-300">Twitter</a>
-              <a href="#" aria-label="Instagram (lien externe)" className="text-gray-400 hover:text-white transition-colors duration-300">Instagram</a>
+              <a href="#" aria-label="Facebook (lien externe)" className="underline text-gray-400 hover:text-white transition-colors duration-300">Facebook</a>
+              <a href="#" aria-label="Twitter (lien externe)" className="underline text-gray-400 hover:text-white transition-colors duration-300">Twitter</a>
+              <a href="#" aria-label="Instagram (lien externe)" className="underline text-gray-400 hover:text-white transition-colors duration-300">Instagram</a>
             </div>
           </div>
         </div>

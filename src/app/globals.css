@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-/* Reset underline on links used as buttons/nav */
-a {
-  text-decoration: none;
+@layer base {
+  a {
+    text-decoration-line: none;
+  }
 }
 
 /* Anti-pattern: CSS global chargé partout, y compris des styles inutilisés */
