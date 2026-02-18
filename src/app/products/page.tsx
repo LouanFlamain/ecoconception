@@ -1,75 +1,41 @@
-"use client";
-
-// Anti-pattern: page convertie en CSR - toutes les données chargées côté client
-import { Suspense, useState, useEffect } from "react";
+import prisma from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-  category: { name: string };
-  categoryId: number;
-}
+export const revalidate = 3600;
 
-interface Category {
-  id: number;
-  name: string;
-}
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; page?: string }>;
+}) {
+  const params = await searchParams;
+  const categoryId = params.category ? parseInt(params.category) : undefined;
+  const currentPage = Math.max(1, parseInt(params.page || "1"));
+  const limit = 12;
 
-export default function ProductsPage() {
-  return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center">Chargement...</div>}>
-      <ProductsContent />
-    </Suspense>
-  );
-}
+  const where = categoryId ? { categoryId } : {};
 
-function ProductsContent() {
-  const searchParams = useSearchParams();
-  const categoryId = searchParams.get("category") ? parseInt(searchParams.get("category")!) : undefined;
+  const [products, total, categories] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      include: { category: true },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      skip: (currentPage - 1) * limit,
+    }),
+    prisma.product.count({ where }),
+    prisma.category.findMany(),
+  ]);
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const totalPages = Math.ceil(total / limit);
 
-  // Anti-pattern: fetch côté client, pas de cache, re-fetch à chaque navigation
-  useEffect(() => {
-    console.log("ProductsPage: fetching all products client-side..."); // Anti-pattern: console.log
-    setLoading(true);
-
-    Promise.all([
-      fetch("/api/products").then((res) => res.json()),
-      fetch("/api/categories").then((res) => res.json()),
-    ]).then(([productsData, categoriesData]) => {
-      setProducts(productsData);
-      setCategories(categoriesData);
-      console.log("ProductsPage: loaded", productsData.length, "products");
-      // Anti-pattern: délai artificiel
-      setTimeout(() => setLoading(false), 200);
-    });
-  }, []);
-
-  // Anti-pattern: filtrage côté client au lieu de côté serveur
-  const filteredProducts = categoryId
-    ? products.filter((p) => p.categoryId === categoryId)
-    : products;
-
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" style={{ animation: "spin 1s linear infinite" }}></div>
-            <p className="text-gray-500">Chargement des produits...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const buildUrl = (page: number) => {
+    const p = new URLSearchParams();
+    p.set("page", page.toString());
+    if (categoryId) p.set("category", categoryId.toString());
+    return `/products?${p}`;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -81,7 +47,7 @@ function ProductsContent() {
 
       {/* Category filter */}
       <div className="flex flex-wrap gap-3 mb-8">
-        <a
+        <Link
           href="/products"
           className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
             !categoryId
@@ -90,9 +56,9 @@ function ProductsContent() {
           }`}
         >
           Tous
-        </a>
+        </Link>
         {categories.map((cat) => (
-          <a
+          <Link
             key={cat.id}
             href={`/products?category=${cat.id}`}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
@@ -102,15 +68,14 @@ function ProductsContent() {
             }`}
           >
             {cat.name}
-          </a>
+          </Link>
         ))}
       </div>
 
-      <p className="text-gray-500 mb-6">{filteredProducts.length} produits trouvés</p>
+      <p className="text-gray-500 mb-6">{total} produits trouvés</p>
 
-      {/* Anti-pattern: pas de pagination, tous les 200 produits chargés d'un coup */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
+        {products.map((product) => (
           <ProductCard
             key={product.id}
             id={product.id}
@@ -122,6 +87,47 @@ function ProductsContent() {
           />
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-12">
+          <Link
+            href={currentPage > 1 ? buildUrl(currentPage - 1) : "#"}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              currentPage > 1
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-100 text-gray-400 pointer-events-none"
+            }`}
+          >
+            ← Précédent
+          </Link>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <Link
+              key={page}
+              href={buildUrl(page)}
+              className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
+                page === currentPage
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {page}
+            </Link>
+          ))}
+
+          <Link
+            href={currentPage < totalPages ? buildUrl(currentPage + 1) : "#"}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              currentPage < totalPages
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-100 text-gray-400 pointer-events-none"
+            }`}
+          >
+            Suivant →
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
