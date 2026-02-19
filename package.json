@@ -8,12 +8,15 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "k6": "docker run --rm -i grafana/k6 run -e BASE_URL=https://ecoconception-ten.vercel.app -",
+    "k6:cloud": "docker run --rm -i -e K6_CLOUD_TOKEN=$K6_CLOUD_TOKEN grafana/k6 cloud run -e BASE_URL=https://ecoconception-ten.vercel.app -"
   },
   "dependencies": {
     "@faker-js/faker": "^10.3.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "@pyroscope/nodejs": "^0.4.10",
     "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",
     "next": "16.1.6",

@@ -11,5 +11,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pyroscope:
+    image: grafana/pyroscope:latest
+    restart: unless-stopped
+    ports:
+      - "4040:4040"
+
 volumes:
   postgres_data:
